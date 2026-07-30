@@ -1,41 +1,45 @@
 #include <iostream>
 #include <utility>
-#include <cstdlib>
+#include <vector>
+#include <algorithm>
 #include <ctime>
 
 //merge sort
-void merge(int* arr, int left, int mid, int right) {
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
+template <typename T>
+void merge(std::vector<T>& arr, int left, int mid, int right) {
+    std::vector<T> temp(right - left + 1);
 
-    int L[n1], R[n2]; // temp arrays
+    int i = left;
+    int j = mid + 1;
+    int k = 0;
 
-    for (int i = 0; i < n1; i++)
-        L[i] = arr[left + i];
-    for (int j = 0; j < n2; j++)
-        R[j] = arr[mid + 1 + j];
-
-    int i = 0, j = 0, k = left;
-
-    while (i < n1 && j < n2) {
-        if (L[i] <= R[j]) arr[k] = L[i++];
-        else arr[k] = R[j++];
-        k++;
+    while (i <= mid && j <= right) {
+        if (arr[i] <= arr[j]) {
+            temp[k++] = arr[i++];
+        } else {
+            temp[k++] = arr[j++];
+        }
     }
 
-    while (i < n1) arr[k++] = L[i++];
-    while (j < n2) arr[k++] = R[j++];
+    while (i <= mid)   temp[k++] = arr[i++];
+    while (j <= right) temp[k++] = arr[j++];
+
+    std::copy(temp.begin(), temp.end(), arr.begin() + left);
 }
 
-void mergeSort(int arr[], int left, int right) {
-    if (left >= right) {
-        return;
-    }
-    int mid = left + (right - left) / 2;
+template <typename T>
+void mergeSort(std::vector<T>& arr, int left, int right) {
+    if (left >= right) return; // base case: 0 or 1 elements
 
+    int mid = left + (right - left) / 2;
     mergeSort(arr, left, mid);
     mergeSort(arr, mid + 1, right);
     merge(arr, left, mid, right);
+}
+
+template <typename T>
+void mergeSort(std::vector<T>& arr) {
+    if (!arr.empty()) mergeSort(arr, 0, static_cast<int>(arr.size()) - 1);
 }
 //merge sort
 void bubbleSort(int arr[], int n) {
@@ -81,7 +85,6 @@ void quickSort_recursion (int arr[], int left, int right) {
         quickSort_recursion(arr, left, pivot_index - 1);
         quickSort_recursion(arr, pivot_index + 1, right);
     }
-
 }
 
 void quickSort(int arr[], int length) {
@@ -94,12 +97,13 @@ int main() {
     int arr1[] = {123, 433, 1, 4, 6, 5, 4, 10, 3 , 901};
     int arr2[] = {3, 10, 200, 1, 23, -1, 0, 7, 4, 90};
     int len = 10;
-    mergeSort(arr1, 0, len - 1);
+    std::vector<int> arr(arr1, arr1 + len);
+    mergeSort(arr);
     quickSort(arr2, len);
-    std::cout << "sorted arr1" << std::endl;
+    std::cout << "sorted arr" << std::endl;
     for (int i = 0; i < len; ++i)
-        std::cout << arr1[i] << std::endl;
-    std::cout << "sorted arr2" << std::endl;
+        std::cout << arr[i] << std::endl;
+    std::cout << "sorted arr" << std::endl;
     for (int i = 0; i < len; ++i)
         std::cout << arr2[i] << std::endl;
     return 0;
